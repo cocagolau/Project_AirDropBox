@@ -17,7 +17,7 @@ FileSender.prototype.init = function() {
 };
 
 FileSender.prototype.initListeners = function() {
-	this.on("blockContextInitialized", this.sendDataChunk);
+	// this.on("blockContextInitialized", this.sendDataChunk);
 };
 
 FileSender.prototype.setFile = function(file, chunkSize, blockSize) {	
@@ -38,7 +38,7 @@ FileSender.prototype.setFile = function(file, chunkSize, blockSize) {
 		"sentChunkCount": 0,
 		"totalChunkCount": Math.ceil(file.size / chunkSize)
 	};
-
+	console.log("fileSender setfile complete");
 	this.emit('fileSendPrepared', this.fileInfo);
 };
 
@@ -94,15 +94,16 @@ FileSender.prototype._sliceBlob = function(blob, start, end) {
 };
 
 FileSender.prototype.sendDataChunk = function(conn) {
+	console.log("SEND DATA CHUNK");
 	var chunkIndex = this.blockTranferContext.chunkIndexToSend,
 		chunkSize = this.blockTranferContext.chunkSize;
 
 	// 
-	if(this.blockTranferContext.blockSize <= chunkIndex) {
+	if (this.blockTranferContext.blockSize <= chunkIndex) {
 		return; 
 	}
 	var chunkToSend = this.chunks[chunkIndex];
-	if(conn && conn.open===true) {
+	if (conn) {
 		conn.send(chunkToSend);
 		this.blockTranferContext.chunkIndexToSend++;
 		this.blockTranferContext.sentChunkCount++;
